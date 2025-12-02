@@ -1,7 +1,6 @@
 use aoclib::solution::{Solution, SolutionPair};
 
-fn invalid_p1(val: u64) -> bool {
-    let str = val.to_string();
+fn invalid_p1(str: &str) -> bool {
     if str.len() % 2 != 0 {
         return false;
     }
@@ -10,8 +9,7 @@ fn invalid_p1(val: u64) -> bool {
     l == r
 }
 
-fn invalid_p2(val: u64) -> bool {
-    let str = val.to_string();
+fn invalid_p2(str: &str) -> bool {
     'outer: for len in 1..=(str.len() / 2) {
         if str.len() % len != 0 {
             continue;
@@ -35,17 +33,18 @@ pub fn solve(str: String) -> SolutionPair {
         .split(',')
         .map(|s| {
             let (l, r) = s.split_once('-').unwrap();
-            let l = l.parse().unwrap();
-            let r = r.parse().unwrap();
+            let l: u64 = l.parse().unwrap();
+            let r: u64 = r.parse().unwrap();
             (l, r)
         })
         .fold((0, 0), |mut accum, (l, r)| {
             for i in l..=r {
-                if invalid_p1(i) {
+                let str = i.to_string();
+                if invalid_p1(&str) {
                     accum.0 += i;
                 }
 
-                if invalid_p2(i) {
+                if invalid_p2(&str) {
                     accum.1 += i;
                 }
             }
