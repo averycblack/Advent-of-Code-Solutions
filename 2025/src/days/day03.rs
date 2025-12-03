@@ -84,13 +84,10 @@ fn p3<const MAX: usize>(chars: &Vec<u8>) -> u64 {
 }
 
 pub fn solve(str: String) -> SolutionPair {
-    let (sol1, sol2) = str
-        .split_whitespace()
-        .enumerate()
-        .fold((0, 0), |(sol1, sol2), (_j, line)| {
-            let chars: Vec<u8> = line.chars().map(get_digit).collect();
-            (sol1 + p3::<2>(&chars), sol2 + p3::<12>(&chars))
-        });
+    let (sol1, sol2) = str.split_whitespace().fold((0, 0), |(sol1, sol2), line| {
+        let chars: Vec<u8> = line.chars().map(get_digit).collect();
+        (sol1 + p3::<2>(&chars), sol2 + p3::<12>(&chars))
+    });
 
     (Solution::from(sol1), Solution::from(sol2))
 }
