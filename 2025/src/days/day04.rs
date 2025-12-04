@@ -1,5 +1,5 @@
 use aoclib::{
-    lib2d::{self, Coordinates, Grid},
+    lib2d::{self, Grid},
     solution::{Solution, SolutionPair},
 };
 
@@ -7,23 +7,19 @@ fn iter(grid: &Grid<char>) -> (u64, Grid<char>) {
     let mut next = grid.clone();
     let mut count = 0;
 
-    let max = grid.get_max_size();
-    for x in 0..max.0 {
-        for y in 0..max.1 {
-            let pt = Coordinates(x, y);
-            if grid.get_point(pt).unwrap() != '@' {
-                continue;
-            }
+    for (pt, val) in grid.iter() {
+        if val != '@' {
+            continue;
+        }
 
-            let rolls = lib2d::DIRS
-                .iter()
-                .filter(|del| grid.get_point(pt + **del).unwrap_or('.') == '@')
-                .count();
+        let rolls = lib2d::DIRS
+            .iter()
+            .filter(|del| grid.get_point(pt + **del).unwrap_or('.') == '@')
+            .count();
 
-            if rolls < 4 {
-                count += 1;
-                next.set_point(pt, '.');
-            }
+        if rolls < 4 {
+            count += 1;
+            next.set_point(pt, '.');
         }
     }
 

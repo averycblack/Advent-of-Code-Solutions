@@ -66,7 +66,7 @@ pub const DIRS: [Coordinates; 8] = [
 ///
 
 #[derive(Clone)]
-pub struct Grid<T: Clone + Copy + PartialEq + Eq> {
+pub struct Grid<T> {
     pub grid: Vec<Vec<T>>,
     pub max_size: Coordinates,
 }
@@ -106,5 +106,39 @@ impl<T: Clone + Copy + PartialEq + Eq> Grid<T> {
 
     pub fn get_max_size(&self) -> Coordinates {
         return self.max_size;
+    }
+
+    pub fn iter(&self) -> GridIter<T> {
+        GridIter {
+            grid: self,
+            idx: Coordinates(0, 0),
+        }
+    }
+}
+
+pub struct GridIter<'a, T> {
+    grid: &'a Grid<T>,
+    idx: Coordinates,
+}
+
+impl<'a, T: Clone + Copy + PartialEq + Eq> Iterator for GridIter<'a, T> {
+    type Item = (Coordinates, T);
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.idx == self.grid.max_size {
+            return None;
+        }
+
+        let val = self.grid.get_point(self.idx).unwrap();
+        let coor = self.idx;
+        self.idx.0 += 1;
+        if self.idx.0 == self.grid.max_size.0 {
+            self.idx.1 += 1;
+            self.idx.0 = 0;
+            if self.idx.1 == self.grid.max_size.1 {
+                self.idx = self.grid.max_size;
+            }
+        }
+
+        Some((coor, val))
     }
 }
