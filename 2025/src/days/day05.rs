@@ -14,23 +14,29 @@ fn find_range(ranges: &Vec<(u64, u64)>, id: u64) -> Option<usize> {
 
 pub fn solve(str: String) -> SolutionPair {
     let (ranges, ingrediants) = str.split_once("\n\n").unwrap();
-    let ranges: Vec<(u64, u64)> = ranges.split_whitespace().map(|s| {
-        let (l, r) = s.split_once('-').unwrap();
-        let l = l.parse().unwrap();
-        let r = r.parse().unwrap();
-        (l, r)
-    }).collect();
+    let ranges: Vec<(u64, u64)> = ranges
+        .split_whitespace()
+        .map(|s| {
+            let (l, r) = s.split_once('-').unwrap();
+            let l = l.parse().unwrap();
+            let r = r.parse().unwrap();
+            (l, r)
+        })
+        .collect();
 
-    let sol1 = ingrediants.split_whitespace().filter(|id| {
-        let id: u64 = id.parse().unwrap();
-        find_range(&ranges, id).is_some()
-    }).count();
+    let sol1 = ingrediants
+        .split_whitespace()
+        .filter(|id| {
+            let id: u64 = id.parse().unwrap();
+            find_range(&ranges, id).is_some()
+        })
+        .count();
 
     let mut merged_ranges: Vec<(u64, u64)> = Vec::new();
     'next_range: for (l, r) in &ranges {
         // First check for if we fully contain any smaller ranges or fully contained by another range
         let mut to_remove = Vec::new();
-        for (idx,ra) in merged_ranges.iter().enumerate() {
+        for (idx, ra) in merged_ranges.iter().enumerate() {
             if *l <= ra.0 && *r >= ra.1 {
                 to_remove.push(idx);
             }
@@ -41,7 +47,9 @@ pub fn solve(str: String) -> SolutionPair {
         }
 
         to_remove.sort();
-        to_remove.iter().rev().for_each(|idx| {merged_ranges.remove(*idx);});
+        to_remove.iter().rev().for_each(|idx| {
+            merged_ranges.remove(*idx);
+        });
 
         // Now merge with ranges that may contain our start/end
         let l_range = find_range(&merged_ranges, *l);
@@ -76,9 +84,9 @@ pub fn solve(str: String) -> SolutionPair {
         }
     }
 
-    let sol2 = merged_ranges.iter().fold(0, |accum, (l, r)| {
-        accum + (*r - *l) + 1
-    });
+    let sol2 = merged_ranges
+        .iter()
+        .fold(0, |accum, (l, r)| accum + (*r - *l) + 1);
 
     if cfg!(debug_assertions) {
         merged_ranges.sort_by(|a, b| {
@@ -99,11 +107,10 @@ pub fn solve(str: String) -> SolutionPair {
         // malformed/reversed range
         for (l, r) in &merged_ranges {
             if l > r {
-                panic!("!! {}-{}", l,r);
+                panic!("!! {}-{}", l, r);
             }
         }
     }
-
 
     (Solution::from(sol1), Solution::from(sol2))
 }
