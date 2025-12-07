@@ -23,23 +23,21 @@ fn p1_recurse(tachyon: &lib2d::Grid<char>, pos: Coordinates, visited: &mut HashS
 }
 
 fn p2_recurse(tachyon: &lib2d::Grid<char>, pos: Coordinates, visited: &mut HashMap<Coordinates, u64>) -> u64 {
-    if visited.contains_key(&pos) {
-        return *visited.get(&pos).unwrap();
+    if let Some(v) = visited.get(&pos) {
+        return *v;
     }
 
-    let mut timelines = 0;
-    if let Some(c) = tachyon.get_point(pos) {
-        if c == '.' {
-            timelines += p2_recurse(tachyon, pos + lib2d::SOUTH, visited);
-        } else if c == '^' {
-            timelines += p2_recurse(tachyon, pos + lib2d::EAST, visited);
-            timelines += p2_recurse(tachyon, pos + lib2d::WEST, visited);
-        } else {
-            panic!();
+    let timelines = match tachyon.get_point(pos) {
+        Some(c) => {
+            if c == '.' {
+                p2_recurse(tachyon, pos + lib2d::SOUTH, visited)
+            } else {
+                p2_recurse(tachyon, pos + lib2d::EAST, visited) +
+                    p2_recurse(tachyon, pos + lib2d::WEST, visited)
+            }
         }
-    } else {
-        timelines = 1;
-    }
+        None => 1
+    };
 
     visited.insert(pos, timelines);
     timelines
