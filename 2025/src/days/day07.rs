@@ -1,8 +1,15 @@
 use std::collections::{HashMap, HashSet};
 
-use aoclib::{lib2d::{self, Coordinates}, solution::{Solution, SolutionPair}};
+use aoclib::{
+    lib2d::{self, Coordinates},
+    solution::{Solution, SolutionPair},
+};
 
-fn p1_recurse(tachyon: &lib2d::Grid<char>, pos: Coordinates, visited: &mut HashSet<Coordinates>) -> u64 {
+fn p1_recurse(
+    tachyon: &lib2d::Grid<char>,
+    pos: Coordinates,
+    visited: &mut HashSet<Coordinates>,
+) -> u64 {
     if visited.contains(&pos) {
         return 0;
     }
@@ -12,7 +19,8 @@ fn p1_recurse(tachyon: &lib2d::Grid<char>, pos: Coordinates, visited: &mut HashS
         if c == '.' {
             return p1_recurse(tachyon, pos + lib2d::SOUTH, visited);
         } else if c == '^' {
-            return 1 + p1_recurse(tachyon, pos + lib2d::EAST, visited)
+            return 1
+                + p1_recurse(tachyon, pos + lib2d::EAST, visited)
                 + p1_recurse(tachyon, pos + lib2d::WEST, visited);
         } else {
             panic!();
@@ -22,7 +30,11 @@ fn p1_recurse(tachyon: &lib2d::Grid<char>, pos: Coordinates, visited: &mut HashS
     0
 }
 
-fn p2_recurse(tachyon: &lib2d::Grid<char>, pos: Coordinates, visited: &mut HashMap<Coordinates, u64>) -> u64 {
+fn p2_recurse(
+    tachyon: &lib2d::Grid<char>,
+    pos: Coordinates,
+    visited: &mut HashMap<Coordinates, u64>,
+) -> u64 {
     if let Some(v) = visited.get(&pos) {
         return *v;
     }
@@ -32,11 +44,11 @@ fn p2_recurse(tachyon: &lib2d::Grid<char>, pos: Coordinates, visited: &mut HashM
             if c == '.' {
                 p2_recurse(tachyon, pos + lib2d::SOUTH, visited)
             } else {
-                p2_recurse(tachyon, pos + lib2d::EAST, visited) +
-                    p2_recurse(tachyon, pos + lib2d::WEST, visited)
+                p2_recurse(tachyon, pos + lib2d::EAST, visited)
+                    + p2_recurse(tachyon, pos + lib2d::WEST, visited)
             }
         }
-        None => 1
+        None => 1,
     };
 
     visited.insert(pos, timelines);
