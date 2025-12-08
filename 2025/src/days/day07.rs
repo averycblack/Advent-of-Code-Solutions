@@ -1,68 +1,36 @@
-use std::collections::{HashMap, HashSet};
-
 use aoclib::{
     lib2d::{self, Coordinates},
     solution::{Solution, SolutionPair},
 };
 
-fn p1_recurse(
-    tachyon: &lib2d::Grid<char>,
-    pos: Coordinates,
-    visited: &mut HashSet<Coordinates>,
-) -> u64 {
-    if visited.contains(&pos) {
-        return 0;
-    }
-
-    visited.insert(pos);
-    if let Some(c) = tachyon.get_point(pos) {
-        if c == '.' {
-            return p1_recurse(tachyon, pos + lib2d::SOUTH, visited);
-        } else if c == '^' {
-            return 1
-                + p1_recurse(tachyon, pos + lib2d::EAST, visited)
-                + p1_recurse(tachyon, pos + lib2d::WEST, visited);
-        } else {
-            panic!();
-        }
-    }
-
-    0
-}
-
-fn p2_recurse(
-    tachyon: &lib2d::Grid<char>,
-    pos: Coordinates,
-    visited: &mut HashMap<Coordinates, u64>,
-) -> u64 {
-    if let Some(v) = visited.get(&pos) {
-        return *v;
-    }
-
-    let timelines = match tachyon.get_point(pos) {
-        Some(c) => {
-            if c == '.' {
-                p2_recurse(tachyon, pos + lib2d::SOUTH, visited)
-            } else {
-                p2_recurse(tachyon, pos + lib2d::EAST, visited)
-                    + p2_recurse(tachyon, pos + lib2d::WEST, visited)
-            }
-        }
-        None => 1,
-    };
-
-    visited.insert(pos, timelines);
-    timelines
-}
-
 pub fn solve(str: String) -> SolutionPair {
     let tachyon = lib2d::Grid::from_string(&str, |c| c);
     let start = tachyon.find_one('S').unwrap();
+    let mut sol1 = 0;
 
-    let mut visited = HashSet::new();
-    let mut scores = HashMap::new();
-    let sol1 = p1_recurse(&tachyon, start + lib2d::SOUTH, &mut visited);
-    let sol2 = p2_recurse(&tachyon, start + lib2d::SOUTH, &mut scores);
+    let max_num = tachyon.get_max_size();
+    let mut beams = vec![0 as u64; max_num.0 as usize];
+    beams[start.0 as usize] = 1;
+
+    for row in 1..max_num.1 {
+        let mut next_row = vec![0 as u64; max_num.0 as usize];
+        for col in 0..max_num.0 {
+            let c = tachyon.get_point(Coordinates(col, row)).unwrap();
+            let x = col as usize;
+            if c == '.' {
+                next_row[x] += beams[x];
+            } else {
+                next_row[x - 1] += beams[x];
+                next_row[x + 1] += beams[x];
+                if beams[x] > 0 {
+                    sol1 += 1;
+                }
+            }
+        }
+        beams = next_row;
+    }
+
+    let sol2: u64 = beams.iter().sum();
 
     (Solution::from(sol1), Solution::from(sol2))
 }
