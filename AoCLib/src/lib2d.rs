@@ -42,6 +42,18 @@ impl Coordinates {
     pub fn neighbors_cardinal(&self) -> [Coordinates; 4] {
         return [*self + NORTH, *self + EAST, *self + SOUTH, *self + WEST];
     }
+
+    pub fn abs(&self) -> Coordinates {
+        Coordinates(self.0.abs(), self.1.abs())
+    }
+
+    pub fn min(&self, rhs: &Coordinates) -> Coordinates {
+        Coordinates(self.0.min(rhs.0), self.1.min(rhs.1))
+    }
+
+    pub fn max(&self, rhs: &Coordinates) -> Coordinates {
+        Coordinates(self.0.max(rhs.0), self.1.max(rhs.1))
+    }
 }
 
 pub const NORTH_IDX: usize = 0;
