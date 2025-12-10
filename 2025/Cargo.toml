@@ -7,3 +7,5 @@ edition = "2024"
 
 [dependencies]
 aoclib = { path = "../AoCLib" }
+good_lp = { version = "1.14.2", features = ["minilp"] }
+microlp = "0.2.11"
